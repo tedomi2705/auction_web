@@ -1,19 +1,23 @@
+from itertools import product
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
 
 
-class Account(Base):
-    __tablename__ = "accounts"
+class User(Base):
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     phone = Column(String, unique=True, index=True)
     date_of_birth = Column(DateTime)
-    password = Column(String)
-    is_active = Column(Boolean, default=True)
+    password = Column(String) # yes plaintext is bad, but this is a demo
+    first_name = Column(String)
+    last_name = Column(String)
+    address = Column(String)
+    is_authenticated = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
 
 
@@ -21,7 +25,9 @@ class Auction(Base):
     __tablename__ = "auctions"
 
     id = Column(Integer, primary_key=True, index=True)
-    item_description = Column(String)
+    name = Column(String)
+    product_id = Column(Integer, ForeignKey("products.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
     start_date = Column(DateTime, default=datetime.utcnow)
     end_date = Column(DateTime)
     starting_bid = Column(Float)
@@ -34,33 +40,18 @@ class Bid(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     auction_id = Column(Integer, ForeignKey("auctions.id"))
-    user_id = Column(Integer, ForeignKey("accounts.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
     bid_price = Column(Float)
     is_winner = Column(Boolean, default=False)
-
-    auction = relationship("Auction", back_populates="bids")
-    user = relationship("Account", back_populates="bids")
-
-
-class Authentication(Base):
-    __tablename__ = "authentications"
-
-    user_id = Column(
-        Integer, ForeignKey("accounts.id"), primary_key=True, index=True
-    )
-    email_verified = Column(Boolean, default=False)
-    phone_verified = Column(Boolean, default=False)
-    user = relationship("Account", back_populates="authentication")
 
 
 class Payment(Base):
     __tablename__ = "payments"
 
     id = Column(Integer, primary_key=True, index=True)
-    bid_id = Column(Integer, ForeignKey("bids.id"))
-    payment_status = Column(String)
-
-    bid = relationship("Bid", back_populates="payment")
+    auction_id = Column(Integer, ForeignKey("auctions.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    is_paid = Column(Boolean, default=False)
 
 
 class Product(Base):
@@ -69,14 +60,8 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     description = Column(String)
+    type = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"))
     image_url = Column(String)
-    auction_id = Column(Integer, ForeignKey("auctions.id"))
-
-    auction = relationship("Auction", back_populates="product")
 
 
-Auction.bids = relationship("Bid", back_populates="auction")
-Account.bids = relationship("Bid", back_populates="user")
-Account.authentication = relationship("Authentication", back_populates="user")
-Bid.payment = relationship("Payment", uselist=False, back_populates="bid")
-Auction.product = relationship("Product", uselist=False, back_populates="auction")
