@@ -1,0 +1,9 @@
+.routes-container {
+  background-color: inherit;
+  /* center every thing */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* make sure the content is not too wide */
+}

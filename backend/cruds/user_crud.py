@@ -44,7 +44,6 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 def update_user(db: Session, user_id: int, user: schemas.UserCreate):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
-    db_user.username = user.username
     db_user.email = user.email
     db_user.phone = user.phone
     db_user.password = user.password
@@ -52,8 +51,6 @@ def update_user(db: Session, user_id: int, user: schemas.UserCreate):
     db_user.first_name = user.first_name
     db_user.last_name = user.last_name
     db_user.address = user.address
-    db_user.is_authenticated = user.is_authenticated
-    db_user.is_admin = user.is_admin
     db.commit()
     db.refresh(db_user)
     return db_user

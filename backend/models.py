@@ -1,5 +1,5 @@
 from itertools import product
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Float
+from sqlalchemy import Boolean, Column, Date, ForeignKey, Integer, String, DateTime, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
@@ -12,7 +12,7 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     phone = Column(String, unique=True, index=True)
-    date_of_birth = Column(DateTime)
+    date_of_birth = Column(Date)
     password = Column(String) # yes plaintext is bad, but this is a demo
     first_name = Column(String)
     last_name = Column(String)

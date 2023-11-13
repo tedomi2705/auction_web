@@ -1,8 +1,21 @@
 from calendar import c
+from distutils.log import Log
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import date, datetime
 
+
+class Login(BaseModel):
+    username: str
+    password: str
+    
+class SignUp(Login):
+    email: str
+    phone: str
+    date_of_birth: date
+    first_name: str
+    last_name: str
+    address: str
 
 class UserBase(BaseModel):
     username: str
@@ -106,7 +119,6 @@ class ProductBase(BaseModel):
     name: str
     description: str
     type: str
-    user_id: int
     image_url: str
 
 
@@ -119,7 +131,6 @@ class ProductUpdate(BaseModel):
     name: Optional[str]
     description: Optional[str]
     type: Optional[str]
-    user_id: Optional[int]
     image_url: Optional[str]
 
     class Config:
@@ -128,7 +139,6 @@ class ProductUpdate(BaseModel):
                 "name": "Product Name",
                 "description": "Product Description",
                 "type": "Product Type",
-                "user_id": 1,
                 "image_url": "https://example.com/image.jpg"
             }
         }
