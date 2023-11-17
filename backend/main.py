@@ -22,6 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -68,7 +69,7 @@ async def signup(
         password=signup.password,
         date_of_birth=signup.date_of_birth,
         first_name=signup.first_name,
-        last_name=signup.last_name
+        last_name=signup.last_name,
     )
     user_crud.create_user(db, user)
     return user
@@ -100,6 +101,23 @@ async def delete_user(user_id: int, db: Session = Depends(get_db)):
     return user_crud.delete_user(db, user_id=user_id)
 
 
+# get user by username
+@app.get("/users/username/{username}", tags=["Users"])
+async def get_user_by_username(username: str, db: Session = Depends(get_db)):
+    username = user_crud.get_user_by_username(db, username=username)
+    if not username:
+        raise HTTPException(status_code=404, detail="User not found")
+    else:
+        return username
+
+# get user by email
+@app.get("/users/email/{email}", tags=["Users"])
+async def get_user_by_email(email: str, db: Session = Depends(get_db)):
+    email = user_crud.get_user_by_email(db, email=email)
+    if not email:
+        raise HTTPException(status_code=404, detail="User not found")
+    else:
+        return email
 # endregion
 
 
@@ -195,18 +213,22 @@ async def delete_payment(payment_id: int, db: Session = Depends(get_db)):
 
 # endregion
 
+
 # region products
 @app.get("/products", tags=["Products"])
 async def get_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return product_crud.get_products(db, skip=skip, limit=limit)
 
+
 @app.get("/products/{product_id}", tags=["Products"])
 async def get_product(product_id: int, db: Session = Depends(get_db)):
     return product_crud.get_product(db, product_id=product_id)
 
+
 @app.post("/product", tags=["Products"])
 async def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)):
     return product_crud.create_product(db, product=product)
+
 
 @app.put("/products/{product_id}", tags=["Products"])
 async def update_product(
@@ -214,8 +236,10 @@ async def update_product(
 ):
     return product_crud.update_product(db, product_id=product_id, product=product)
 
+
 @app.delete("/products/{product_id}", tags=["Products"])
 async def delete_product(product_id: int, db: Session = Depends(get_db)):
     return product_crud.delete_product(db, product_id=product_id)
+
 
 # endregion
